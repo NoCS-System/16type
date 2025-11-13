@@ -6,6 +6,16 @@ import { getTypeDisplayName } from '@/data/typeNames';
 import { getTypeMeta } from '@/data/typeMeta';
 
 export default function ResultCard({ result }: { result: ScoreResult }) {
+  const typeName = getTypeDisplayName(result.typeKey);
+  const xShareUrl = useMemo(() => {
+    if (typeof window === 'undefined') return '';
+    const origin = window.location.origin || '';
+    const url = `${origin}/result?k=${encodeURIComponent(result.typeKey)}`;
+    const text = `16type 診断: ${typeName}（${result.typeKey}）`;
+    const hashtags = '16type';
+    return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent(hashtags)}`;
+  }, [result.typeKey, typeName]);
+
   const imageFile = useMemo(() => {
     // ファイル名は "P-S-R-P.png" のようにハイフン連結、最後は Pn→P / A は A
     const a = result.axisDecision.P_or_C;
@@ -62,7 +72,7 @@ export default function ResultCard({ result }: { result: ScoreResult }) {
         />
       </div>
       <div style={{ fontSize: 14, color: '#475569', marginBottom: 4 }}>あなたのタイプ</div>
-      <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 6 }}>{getTypeDisplayName(result.typeKey)}</div>
+      <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 6 }}>{typeName}</div>
       <div style={{ fontSize: 14, color: '#64748b', marginBottom: 12 }}>{result.typeKey}</div>
       {(() => {
         const meta = getTypeMeta(result.typeKey);
@@ -88,6 +98,44 @@ export default function ResultCard({ result }: { result: ScoreResult }) {
           </div>
         );
       })()}
+
+      {/* X 共有ボタン */}
+      {!!xShareUrl && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+          <a
+            href={xShareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Xで結果を共有する"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 14px',
+              borderRadius: 999,
+              background: '#0f1419',
+              color: '#ffffff',
+              textDecoration: 'none',
+              fontWeight: 700,
+              border: '1px solid #111827',
+            }}
+          >
+            <span style={{
+              display: 'inline-block',
+              width: 16,
+              height: 16,
+              background: '#ffffff',
+              color: '#0f1419',
+              borderRadius: 3,
+              fontSize: 12,
+              lineHeight: '16px',
+              textAlign: 'center',
+              fontWeight: 900,
+            }}>X</span>
+            Xで共有
+          </a>
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12, marginBottom: 16 }}>
         {chips.map((c) => (
