@@ -1,0 +1,4 @@
+name = "16type"
+compatibility_date = "2024-11-23"
+compatibility_flags = ["nodejs_compat"]
+
